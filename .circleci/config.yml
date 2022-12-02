@@ -2,15 +2,10 @@ version: 2.1
 jobs:
   test:
     machine:
-      node-version:
-        type: string
-      steps:
-        - checkout
-        - run: npm test
+      node:
+        version: 18.12.1
+        - npm test
 
-
-
-workflows:
 
   all-tests:
     jobs:
