@@ -4,7 +4,7 @@ jobs:
     machine:
       node:
         version: 18.12.1
-  - npm test
+  -run: npm test
 
    
 
