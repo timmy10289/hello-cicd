@@ -1,10 +1,10 @@
 version: 2.1
 jobs:
-  machine:
-    node:
-      version: 18.12.1
   test:
-    - npm test
+    machine:
+      node:
+        version: 18.12.1
+  - npm test
 
 
   all-tests:
