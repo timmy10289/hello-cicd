@@ -4,6 +4,16 @@ machine: # 虛擬機的環境
   node:
     version: 18.12.1 #把剛剛得到的node version填到這裡
 
+jobs:
+  build-and-test:
+  steps:
+    -checkout
+    - run:
+      working_directory: ~/project/App.Tests
+      name: test
+      commands: |
+      | dotnet test
+
 worflows:
   test:
     jobs:
