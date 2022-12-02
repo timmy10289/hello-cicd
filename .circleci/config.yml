@@ -3,6 +3,8 @@ version: 2.1
 machine: # 虛擬機的環境
   node:
     version: 18.12.1 #把剛剛得到的node version填到這裡
+  test:
+    - npm test  #每一個deploy到github上的commit都會執行npm test
 
 jobs:
   build-and-test:
@@ -13,11 +15,6 @@ jobs:
       name: test
       commands: |
         dotnet test
-
-worflows:
-  test:
-    jobs:
-      - npm test
 
     
   
