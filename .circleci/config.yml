@@ -12,7 +12,7 @@ jobs:
       working_directory: ~/project/App.Tests
       name: test
       commands: |
-      | dotnet test
+        dotnet test
 
 worflows:
   test:
