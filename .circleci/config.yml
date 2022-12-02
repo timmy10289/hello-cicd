@@ -7,7 +7,7 @@ machine: # 虛擬機的環境
 jobs:
   build-and-test:
   steps:
-    -checkout
+    - checkout
     - run:
       working_directory: ~/project/App.Tests
       name: test
