@@ -1,6 +1,8 @@
-# config.yml
-version: 2.1
-machine: # 虛擬機的環境
+workflows:
+
+  # config.yml
+  version: 2.1
+  machine: # 虛擬機的環境
   node:
     version: 18.12.1 #把剛剛得到的node version填到這裡
   test:
