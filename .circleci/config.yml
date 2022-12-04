@@ -35,7 +35,7 @@ jobs:
 commands:
     setup:
         description: |
-            Install and authenticate with the Elastic Beanstalk CLI. You must have your AWS auth environment variables set for ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_DEFAULT_REGION"].
+            Install and authenticate with the Elastic Beanstalk CLI. You must have your AWS auth environment variables set for ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_DEFALTU_REGION"].
         steps:
             - run:
                 command: |
@@ -91,16 +91,16 @@ commands:
 
                     CheckAWSEnvVars() {
                         ERRMSGTEXT="has not been set. This environment variable is required for authentication."
-                        if [ -z "$AKIAXZIHLJQKTTBUAO4Q" ]; then
-                            echo "AKIAXZIHLJQKTTBUAO4Q $ERRMSGTEXT"
+                        if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+                            echo "AWS_ACCESS_KEY_ID $ERRMSGTEXT"
                             exit 1
                         fi
-                        if [ -z "$WUMdNlWxSSADjCl0Dbr4SLKUaSE8lye4sF3bDM2M" ]; then
-                            echo "AWS_SECRET_ACCESS_KEYWUMdNlWxSSADjCl0Dbr4SLKUaSE8lye4sF3bDM2M $ERRMSGTEXT"
+                        if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+                            echo "AWS_SECRET_ACCESS_KEY $ERRMSGTEXT"
                             exit 1
                         fi
-                        if [ -z "$ap-northeast-1" ]; then
-                            echo "ap-northeast-1 $ERRMSGTEXT"
+                        if [ -z "$AWS_DEFALTU_REGION" ]; then
+                            echo "AWS_DEFALTU_REGION $ERRMSGTEXT"
                             exit 1
                         fi
                     }
