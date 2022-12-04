@@ -6,6 +6,7 @@ orbs:
   # The Node.js orb contains a set of prepackaged CircleCI configuration you can utilize
   # Orbs reduce the amount of configuration required for common tasks.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
+  aws-elastic-beanstalk: circleci/aws-elastic-beanstalk@2.0.1
   node: circleci/node@4.7
 
 jobs:
@@ -29,6 +30,90 @@ jobs:
       - run:
           name: Run tests
           command: npm test
+
+
+commands:
+    setup:
+        description: |
+            Install and authenticate with the Elastic Beanstalk CLI. You must have your AWS auth environment variables set for ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_DEFAULT_REGION"].
+        steps:
+            - run:
+                command: |
+                    if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we are root
+                      export SUDO="sudo";
+                    fi
+
+                    SetupPython() {
+                        # setups python3
+                        $SUDO apt-get -qq -y install python3-dev
+                        SetupPipx
+                    }
+
+                    SetupPipx() {
+                        if [ "$(which pip | tail -1)" ]; then
+                            echo "pip found"
+                        else
+                            echo "pip not found"
+                            $SUDO apt-get update
+                            $SUDO apt-get install -qq -y python3-setuptools
+                            curl https://bootstrap.pypa.io/pip/3.5/get-pip.py | python3
+                        fi
+                        # install venv with system for pipx
+                        # by using pipx we dont have to worry about activating the virtualenv before using eb
+                        $SUDO apt-get -qq -y install python3-venv
+                        pip install pipx
+                    }
+
+
+
+                    InstallEBCLI() {
+                        if uname -a | grep Darwin > /dev/null 2>&1; then
+                            cd /tmp || { echo "Not able to access /tmp"; return; }
+                            git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
+                            brew install zlib openssl readline
+                            CFLAGS="-I$(brew --prefix openssl)/include -I$(brew --prefix readline)/include -I$(xcrun --show-sdk-path)/usr/include" LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix readline)/lib -L$(brew --prefix zlib)/lib" ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer >/dev/null 2>&1
+                            return $?
+                        elif uname -a | grep Linux > /dev/null 2>&1; then
+                            $SUDO apt-get -qq update > /dev/null
+                            # these are the system level deps for the ebcli
+                            $SUDO apt-get -qq -y install build-essential zlib1g-dev libssl-dev libncurses-dev libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
+                            if [ "$(which python3 | tail -1)" ]; then
+                                echo "Python3 env found"
+                                SetupPipx
+                            else
+                                echo "Python3 env not found, setting up python with apt"
+                                SetupPython
+                            fi
+                        fi
+                            pipx install awsebcli
+                            echo "Complete"
+                    }
+
+                    CheckAWSEnvVars() {
+                        ERRMSGTEXT="has not been set. This environment variable is required for authentication."
+                        if [ -z "$AKIAXZIHLJQKTTBUAO4Q" ]; then
+                            echo "AKIAXZIHLJQKTTBUAO4Q $ERRMSGTEXT"
+                            exit 1
+                        fi
+                        if [ -z "$WUMdNlWxSSADjCl0Dbr4SLKUaSE8lye4sF3bDM2M" ]; then
+                            echo "AWS_SECRET_ACCESS_KEYWUMdNlWxSSADjCl0Dbr4SLKUaSE8lye4sF3bDM2M $ERRMSGTEXT"
+                            exit 1
+                        fi
+                        if [ -z "$ap-northeast-1" ]; then
+                            echo "ap-northeast-1 $ERRMSGTEXT"
+                            exit 1
+                        fi
+                    }
+
+                    # Will not run if sourced for bats.
+                    # View src/tests for more information.
+                    TEST_ENV="bats-core"
+                    if [ "${0#*$TEST_ENV}" == "$0" ]; then
+                        CheckAWSEnvVars
+                        InstallEBCLI
+                    fi
+                name: Setting Up Elastic Beanstalk CLI
+
 
 workflows:
   # Below is the definition of your workflow.
